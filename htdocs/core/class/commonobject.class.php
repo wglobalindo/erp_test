@@ -497,8 +497,8 @@ abstract class CommonObject
 
 	/**
 	 * @var array    List of child tables. To know object to delete on cascade.
-	 *               If name matches '@ClassNAme:FilePathClass;ParentFkFieldName' it will
-	 *               call method deleteByParentField(parentId, ParentFkFieldName) to fetch and delete child object
+	 *               If name is like '@ClassName:FilePathClass:ParentFkFieldName', it will
+	 *               call method deleteByParentField(parentId, ParentFkFieldName) to fetch and delete child object.
 	 */
 	protected $childtablesoncascade = array();
 
@@ -3634,10 +3634,10 @@ abstract class CommonObject
 		if (is_array($this->fields) && array_key_exists('status', $this->fields)) $fieldstatus = 'status';
 
 		$sql = "UPDATE ".MAIN_DB_PREFIX.$elementTable;
-		$sql .= " SET ".$fieldstatus." = ".$status;
+		$sql .= " SET ".$fieldstatus." = ".((int) $status);
 		// If status = 1 = validated, update also fk_user_valid
-		if ($status == 1 && $elementTable == 'expensereport') $sql .= ", fk_user_valid = ".$user->id;
-		$sql .= " WHERE rowid=".$elementId;
+		if ($status == 1 && $elementTable == 'expensereport') $sql .= ", fk_user_valid = ".((int) $user->id);
+		$sql .= " WHERE rowid=".((int) $elementId);
 
 		dol_syslog(get_class($this)."::setStatut", LOG_DEBUG);
 		if ($this->db->query($sql))
@@ -5492,7 +5492,6 @@ abstract class CommonObject
 			}
 
 			$sql .= ")";
-
 			$resql = $this->db->query($sql);
 			if (!$resql)
 			{
@@ -5739,10 +5738,17 @@ abstract class CommonObject
 					$this->array_options["options_".$key] = price2num($this->array_options["options_".$key]);
 					break;
 				case 'date':
-					$this->array_options["options_".$key] = $this->db->idate($this->array_options["options_".$key]);
-					break;
 				case 'datetime':
-					$this->array_options["options_".$key] = $this->db->idate($this->array_options["options_".$key]);
+					if (empty($this->array_options["options_".$key])) {
+						$this->array_options["options_".$key] = null;
+					} else {
+						$this->array_options["options_".$key] = $this->db->idate($this->array_options["options_".$key]);
+					}
+					break;
+				case 'boolean':
+					if (empty($this->array_options["options_".$key])) {
+						$this->array_options["options_".$key] = null;
+					}
 					break;
 				/*
 				case 'link':
@@ -5790,7 +5796,11 @@ abstract class CommonObject
 			}
 
 			if ($linealreadyfound) {
-				$sql = "UPDATE ".MAIN_DB_PREFIX.$this->table_element."_extrafields SET ".$key." = '".$this->db->escape($this->array_options["options_".$key])."'";
+				if ($this->array_options["options_".$key] === null) {
+					$sql = "UPDATE ".MAIN_DB_PREFIX.$this->table_element."_extrafields SET ".$key." = null";
+				} else {
+					$sql = "UPDATE ".MAIN_DB_PREFIX.$this->table_element."_extrafields SET ".$key." = '".$this->db->escape($this->array_options["options_".$key])."'";
+				}
 				$sql .= " WHERE fk_object = ".$this->id;
 			} else {
 				$result = $this->insertExtraFields('', $user);
@@ -5911,7 +5921,12 @@ abstract class CommonObject
 			$type = 'varchar';
 		} elseif (is_array($this->fields[$key]['arrayofkeyval'])) {
 			$param['options'] = $this->fields[$key]['arrayofkeyval'];
-			$type = 'select';
+			$type = $this->fields[$key]['type'];
+			if (!in_array($type, array('select', 'checkbox', 'radio'))) {
+				$type = 'select';
+			} else {
+				$type = $this->fields[$key]['type'];
+			}
 		} else {
 			$param['options'] = array();
 			$type = $this->fields[$key]['type'];
@@ -7122,7 +7137,7 @@ abstract class CommonObject
 
 		$buyPrice = 0;
 
-		if (($unitPrice > 0) && (isset($conf->global->ForceBuyingPriceIfNull) && $conf->global->ForceBuyingPriceIfNull == 1)) // In most cases, test here is false
+		if (($unitPrice > 0) && (isset($conf->global->ForceBuyingPriceIfNull) && $conf->global->ForceBuyingPriceIfNull > 0)) // In most cases, test here is false
 		{
 			$buyPrice = $unitPrice * (1 - $discountPercent / 100);
 		} else {

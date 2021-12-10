@@ -495,8 +495,8 @@ if (empty($reshook))
 				if ($accountancy_code_buy_intra <= 0) { $object->accountancy_code_buy_intra = ''; } else { $object->accountancy_code_buy_intra = $accountancy_code_buy_intra; }
 				if ($accountancy_code_buy_export <= 0) { $object->accountancy_code_buy_export = ''; } else { $object->accountancy_code_buy_export = $accountancy_code_buy_export; }
 
-				// Fill array 'array_options' with data from add form
-				$ret = $extrafields->setOptionalsFromPost(null, $object);
+                // Fill array 'array_options' with data from add form
+        		$ret = $extrafields->setOptionalsFromPost(null, $object, '@GETPOSTISSET');
 				if ($ret < 0) $error++;
 
 				if (!$error && $object->check())
@@ -1624,7 +1624,7 @@ if (is_object($objcanvas) && $objcanvas->displayCanvasExists($action)) {
 				print '<td>'.$langs->trans("CountryOrigin").'</td>';
 				print '<td>';
 				print img_picto('', 'globe-americas', 'class="paddingrightonly"');
-				print $form->select_country($object->country_id, 'country_id', '', 0, 'minwidth100 maxwidthonsmartphone');
+				print $form->select_country(GETPOSTISSET('country_id') ? GETPOST('country_id', 'int') : $object->country_id, 'country_id', '', 0, 'minwidth100 maxwidthonsmartphone');
 				if ($user->admin) print info_admin($langs->trans("YouCanChangeValuesForThisListFromDictionarySetup"), 1);
 				print '</td>';
 				// State
@@ -1638,7 +1638,7 @@ if (is_object($objcanvas) && $objcanvas->displayCanvasExists($action)) {
 						print '<td>'.$form->editfieldkey('StateOrigin', 'state_id', '', $object, 0).'</td><td colspan="3">';
 					}
 
-					print $formcompany->select_state($object->state_id, $object->country_code);
+					print $formcompany->select_state(GETPOSTISSET('state_id') ? GETPOST('state_id', 'int') : $object->state_id, $object->country_code);
 					print '</td>';
 				}
 				print '</tr>';

@@ -220,7 +220,7 @@ if ($action == 'addtime' && $user->rights->projet->lire && GETPOST('assigntask')
 		{
 			// Test if we are already contact of the project (should be rare but sometimes we can add as task contact without being contact of project, like when admin user has been removed from contact of project)
 			$sql = 'SELECT ec.rowid FROM '.MAIN_DB_PREFIX.'element_contact as ec, '.MAIN_DB_PREFIX.'c_type_contact as tc WHERE tc.rowid = ec.fk_c_type_contact';
-			$sql .= ' AND ec.fk_socpeople = '.$idfortaskuser." AND ec.element_id = '.$object->fk_project.' AND tc.element = 'project' AND source = 'internal'";
+			$sql .= ' AND ec.fk_socpeople = '.((int) $idfortaskuser)." AND ec.element_id = ".((int) $object->fk_project)." AND tc.element = 'project' AND source = 'internal'";
 			$resql = $db->query($sql);
 			if ($resql)
 			{
@@ -520,7 +520,6 @@ if (!empty($conf->global->MAIN_DEFAULT_WORKING_DAYS))
 for ($idw = 0; $idw < 7; $idw++)
 {
 	$dayinloopfromfirstdaytoshow = dol_time_plus_duree($firstdaytoshow, $idw, 'd'); // $firstdaytoshow is a date with hours = 0
-	$dayinloop = dol_time_plus_duree($startday, $idw, 'd');
 
 	// Useless because $dayinloopwithouthours should be same than $dayinloopfromfirstdaytoshow
 	//$tmparray = dol_getdate($dayinloop);

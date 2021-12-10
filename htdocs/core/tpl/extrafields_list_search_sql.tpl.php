@@ -23,7 +23,13 @@ if (!empty($extrafieldsobjectkey) && !empty($search_array_options) && is_array($
 
 		if ($crit != '' && in_array($typ, array('date', 'datetime', 'timestamp')))
 		{
-			$sql .= " AND ".$extrafieldsobjectprefix.$tmpkey." = '".$db->idate($crit)."'";
+			if ($typ == 'date'){
+				include_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
+				$crit = dol_get_first_hour($crit);
+				$sql .= " AND ".$extrafieldsobjectprefix.$tmpkey." = '".$db->idate($crit)."'";
+			}else {
+				$sql .= " AND ".$extrafieldsobjectprefix.$tmpkey." = '".$db->idate($crit)."'";
+			}
 		} elseif (in_array($typ, array('boolean')))
 		{
 			if ($crit !== '-1' && $crit !== '') {
@@ -40,7 +46,7 @@ if (!empty($extrafieldsobjectkey) && !empty($search_array_options) && is_array($
 			if (in_array($typ, array('chkbxlst', 'checkbox'))) $mode_search = 4; // Search on a multiselect field with sql type = text
 			if (is_array($crit)) $crit = implode(' ', $crit); // natural_search() expects a string
 			elseif ($typ === 'select' and is_string($crit) and strpos($crit, ' ') === false) {
-				$sql .= ' AND ('.$extrafieldsobjectprefix.$tmpkey.' = "'.$db->escape($crit).'")';
+				$sql .= " AND (".$extrafieldsobjectprefix.$tmpkey." = '".$db->escape($crit)."')";
 				continue;
 			}
 			$sql .= natural_search($extrafieldsobjectprefix.$tmpkey, $crit, $mode_search);

@@ -11,6 +11,7 @@
  * Copyright (C) 2017		Alexandre Spangaro		<aspangaro@open-dsi.fr>
  * Copyright (C) 2018		Frédéric France			<frederic.france@netlogic.fr>
  * Copyright (C) 2020		Tobias Sekan			<tobias.sekan@startmail.com>
+ * Copyright (C) 2021		Ferran Marcet			<fmarcet@2byte.es>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,8 +35,7 @@
 
 require '../../main.inc.php';
 
-// Security check
-if ($user->socid) $socid = $user->socid;
+
 
 // doesn't work :-(
 // restrictedArea($user, 'fournisseur');
@@ -62,6 +62,9 @@ $optioncss = GETPOST('optioncss', 'alpha');
 $contextpage			= GETPOST('contextpage', 'aZ') ? GETPOST('contextpage', 'aZ') : 'vendorpaymentlist';
 
 $socid = GETPOST('socid', 'int');
+
+// Security check
+if ($user->socid) $socid = $user->socid;
 
 $search_ref				= GETPOST('search_ref', 'alpha');
 $search_day				= GETPOST('search_day', 'int');
@@ -171,7 +174,7 @@ if ($search_company)			$sql .= natural_search('s.nom', $search_company);
 if ($search_payment_type != '')	$sql .= " AND c.code='".$db->escape($search_payment_type)."'";
 if ($search_cheque_num != '')	$sql .= natural_search('p.num_paiement', $search_cheque_num);
 if ($search_amount)				$sql .= natural_search('p.amount', $search_amount, 1);
-if ($search_bank_account > 0)	$sql .= ' AND b.fk_account='.$search_bank_account."'";
+if ($search_bank_account > 0)	$sql .= ' AND b.fk_account='.((int) $search_bank_account);
 
 if ($search_all) $sql .= natural_search(array_keys($fieldstosearchall), $search_all);
 

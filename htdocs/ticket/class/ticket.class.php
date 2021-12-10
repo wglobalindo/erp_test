@@ -529,7 +529,7 @@ class Ticket extends CommonObject
 		global $langs;
 
 		// Check parameters
-		if (!$id && !$track_id && !$ref && !$email_msgid) {
+		if (empty($id) && empty($ref) && empty($track_id) && empty($email_msgid)) {
 			$this->error = 'ErrorWrongParameters';
 			dol_print_error(get_class($this)."::fetch ".$this->error);
 			return -1;
@@ -1657,7 +1657,7 @@ class Ticket extends CommonObject
 		$actioncomm->userassigned = array($user->id);
 		$actioncomm->userownerid = $user->id;
 		$actioncomm->datep = $now;
-		$actioncomm->percentage = 100;
+		$actioncomm->percentage = -1; // percentage is not relevant for punctual events
 		$actioncomm->elementtype = 'ticket';
 		$actioncomm->fk_element = $this->id;
 

@@ -43,6 +43,7 @@
 	--amountremaintopaycolor:#880000;
 	--amountpaymentcomplete:#008800;
 	--amountremaintopaybackcolor:none;
+	--infoboxmoduleenabledbgcolor : linear-gradient(0.4turn, #fff, #fff, #fff, #e4efe8);
 }
 
 <?php
@@ -87,6 +88,7 @@ if (!empty($conf->global->THEME_DARKMODEENABLED)) {
 	            --amountremaintopaycolor:rgb(252,84,91);
 	            --amountpaymentcomplete:rgb(101,184,77);
 	            --amountremaintopaybackcolor:rbg(245,130,46);
+				--infoboxmoduleenabledbgcolor : linear-gradient(0.4turn, #000, #000, #000, #274231);
 	      }\n";
 	if ($conf->global->THEME_DARKMODEENABLED != 2) {
 		print "}\n";
@@ -4325,6 +4327,9 @@ div#card-errors {
 .ui-dialog-content {
 }
 
+.ui-dialog.ui-corner-all.ui-widget.ui-widget-content.ui-front.ui-dialog-buttons.ui-draggable {
+	z-index: 1002 !important;		/* Default 101 with jquery, top menu have a z-index of 1000 */
+}
 
 /* ============================================================================== */
 /* For content of image preview                                                   */

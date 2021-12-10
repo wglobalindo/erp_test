@@ -1,7 +1,8 @@
 <?php
-/* Copyright (C) 2013-2016 Jean-François FERRY <hello@librethic.io>
- * Copyright (C) 2016      Christophe Battarel <christophe@altairis.fr>
- * Copyright (C) 2018      Laurent Destailleur <eldy@users.sourceforge.net>
+/* Copyright (C) 2013-2016 Jean-François FERRY  <hello@librethic.io>
+ * Copyright (C) 2016      Christophe Battarel  <christophe@altairis.fr>
+ * Copyright (C) 2018      Laurent Destailleur  <eldy@users.sourceforge.net>
+ * Copyright (C) 2021      Alexandre Spangaro   <aspangaro@open-dsi.fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -198,9 +199,15 @@ if (empty($reshook)) {
 					$result = $object->add_contact($contactid, $typeid, 'external');
 				}
 
-				// altairis: link ticket to project
-				if (GETPOST('projectid') > 0) {
-					$object->setProject(GETPOST('projectid'));
+				// Link ticket to project
+				if (GETPOST('origin', 'alpha') == 'projet') {
+					$projectid = GETPOST('originid', 'int');
+				} else {
+					$projectid = GETPOST('projectid', 'int');
+				}
+
+				if ($projectid > 0) {
+					$object->setProject($projectid);
 				}
 
 				// Auto assign user
@@ -457,7 +464,7 @@ if (empty($reshook)) {
 	}
 
 	// Set parent company
-	if ($action == 'set_thirdparty' && $user->rights->societe->creer) {
+	if ($action == 'set_thirdparty' && $user->rights->ticket->write) {
 		if ($object->fetch(GETPOST('id', 'int'), '', GETPOST('track_id', 'alpha')) >= 0) {
 			$result = $object->setCustomer(GETPOST('editcustomer', 'int'));
 			$url = 'card.php?action=view&track_id='.GETPOST('track_id', 'alpha');
@@ -1297,15 +1304,32 @@ elseif (empty($action) || $action == 'view' || $action == 'addlink' || $action =
 		// add a message
 		if ($action == 'presend' || $action == 'presend_addmessage')
 		{
+			if ($object->fk_soc > 0) {
+				$object->fetch_thirdparty();
+			}
+
+			$outputlangs = $langs;
+			$newlang = '';
+			if ($conf->global->MAIN_MULTILANGS && empty($newlang) && GETPOST('lang_id', 'aZ09')) {
+				$newlang = GETPOST('lang_id', 'aZ09');
+			} elseif ($conf->global->MAIN_MULTILANGS && empty($newlang) && is_object($object->thirdparty)) {
+				$newlang = $object->thirdparty->default_lang;
+			}
+			if (!empty($newlang)) {
+				$outputlangs = new Translate("", $conf);
+				$outputlangs->setDefaultLang($newlang);
+			}
+
+			$arrayoffamiliestoexclude = array('objectamount');
+
 			$action = 'add_message'; // action to use to post the message
 			$modelmail = 'ticket_send';
 
 			// Substitution array
 			$morehtmlright = '';
 			$help = "";
-			$substitutionarray = array();
+			$substitutionarray = getCommonSubstitutionArray($outputlangs, 0, $arrayoffamiliestoexclude, $object);
 			if ($object->fk_soc > 0) {
-				$object->fetch_thirdparty();
 				$substitutionarray['__THIRDPARTY_NAME__'] = $object->thirdparty->name;
 			}
 			$substitutionarray['__USER_SIGNATURE__'] = $user->signature;
@@ -1337,16 +1361,6 @@ elseif (empty($action) || $action == 'view' || $action == 'addlink' || $action =
 			print load_fiche_titre($langs->trans('TicketAddMessage'), $morehtmlright, 'messages@ticket');
 
 			print '<hr>';
-
-			// Define output language
-			$outputlangs = $langs;
-			$newlang = '';
-			if ($conf->global->MAIN_MULTILANGS && empty($newlang) && !empty($_REQUEST['lang_id'])) {
-				$newlang = $_REQUEST['lang_id'];
-			}
-			if ($conf->global->MAIN_MULTILANGS && empty($newlang)) {
-				$newlang = $object->default_lang;
-			}
 
 			$formticket = new FormTicket($db);
 

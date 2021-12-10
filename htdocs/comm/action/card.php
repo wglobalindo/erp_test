@@ -560,7 +560,7 @@ if (empty($reshook) && $action == 'update')
 		}
 
 		// Fill array 'array_options' with data from add form
-		$ret = $extrafields->setOptionalsFromPost(null, $object);
+		$ret = $extrafields->setOptionalsFromPost(null, $object, '@GETPOSTISSET');
 		if ($ret < 0) $error++;
 
 		if (!$error) {
@@ -1143,6 +1143,7 @@ if ($action == 'create')
 		print '<tr><td class="nowrap">'.$langs->trans("ActionOnContact").'</td><td>';
 		$preselectedids = GETPOST('socpeopleassigned', 'array');
 		if (GETPOST('contactid', 'int')) $preselectedids[GETPOST('contactid', 'int')] = GETPOST('contactid', 'int');
+		if ($origin=='contact') $preselectedids[GETPOST('originid', 'int')] = GETPOST('originid', 'int');
 		print img_picto('', 'contact', 'class="paddingrightonly"');
 		print $form->selectcontacts(GETPOST('socid', 'int'), $preselectedids, 'socpeopleassigned[]', 1, '', '', 0, 'minwidth300 quatrevingtpercent', false, 0, array(), false, 'multiple', 'contactid');
 		print '</td></tr>';

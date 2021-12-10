@@ -99,7 +99,7 @@ $result = restrictedArea($user, 'user', $id, 'user', $feature2);
 if ($user->id <> $id && !$canreaduser) accessforbidden();
 
 // Load translation files required by page
-$langs->loadLangs(array('users', 'companies', 'ldap', 'admin', 'hrm', 'stocks'));
+$langs->loadLangs(array('users', 'companies', 'ldap', 'admin', 'hrm', 'stocks', 'other'));
 
 $object = new User($db);
 $extrafields = new ExtraFields($db);
@@ -444,7 +444,7 @@ if (empty($reshook)) {
 				}
 
 				// Fill array 'array_options' with data from add form
-				$ret = $extrafields->setOptionalsFromPost(null, $object);
+				$ret = $extrafields->setOptionalsFromPost(null, $object, '@GETPOSTISSET');
 				if ($ret < 0) {
 					$error++;
 				}

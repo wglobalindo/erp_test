@@ -792,6 +792,11 @@ if ($urllogo)
 	}
 	print '</div>';
 }
+if (!empty($conf->global->MAIN_IMAGE_PUBLIC_PAYMENT)) {
+	print '<div class="backimagepublicpayment">';
+	print '<img id="dolpaymentlogo" src="'.$conf->global->MAIN_IMAGE_PUBLIC_PAYMENT.'">';
+	print '</div>';
+}
 
 
 
@@ -1336,7 +1341,7 @@ if ($source == 'contractline')
 }
 
 // Payment on member subscription
-if ($source == 'membersubscription')
+if ($source == 'member' || $source == 'membersubscription')
 {
 	$found = true;
 	$langs->load("members");
