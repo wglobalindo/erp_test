@@ -310,6 +310,11 @@ class pdf_shipment extends ModelePdfExpedition
 						case 2: $unit_name ="Dozen"; break;
 						case 3: $unit_name ="Pair"; break;
 						case 4: $unit_name ="Box"; break;
+						case 5: $unit_name ="Roll"; break;
+						case 6: $unit_name ="Meter"; break;
+						case 7: $unit_name ="Liter"; break;
+						case 8: $unit_name ="Pack"; break;
+						case 9: $unit_name ="Drum"; break;
 					}
 					$pdf->SetXY(180, $curY);
 					$pdf->MultiCell(25, 5, $unit_name, 0, 'C', 0);
