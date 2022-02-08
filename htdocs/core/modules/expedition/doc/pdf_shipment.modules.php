@@ -261,7 +261,7 @@ class pdf_shipment extends ModelePdfExpedition
 
 					if ($object->lines[$i]->array_options['options_cn']){
 						$pdf->SetXY(30, $curY);
-						$pdf->MultiCell(115, 4, $outputlangs->convToOutputCharset($object->lines[$i]->array_options['options_cn']), 0, 'L', 0);
+						$pdf->MultiCell(100, 4, $outputlangs->convToOutputCharset($object->lines[$i]->array_options['options_cn']), 0, 'L', 0);
 					}
 					else {
 						$libelleproduitservice = pdf_writelinedesc($pdf,$object,$i,$outputlangs,115,4,30,$curY,0,1);
