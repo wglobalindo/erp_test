@@ -513,6 +513,13 @@ class SupplierProposal extends CommonObject
 				$txtva = preg_replace('/\s*\(.*\)/', '', $txtva); // Remove code into vatrate.
 			}
 
+<<<<<<< HEAD
+=======
+			if (!empty($conf->multicurrency->enabled) && $pu_ht_devise > 0) {
+				$pu = 0;
+			}
+
+>>>>>>> 7410d50b6bd603801c02504435d89fd2da6570c4
 			$tabprice = calcul_price_total($qty, $pu, $remise_percent, $txtva, $txlocaltax1, $txlocaltax2, 0, $price_base_type, $info_bits, $type, $this->thirdparty, $localtaxes_type, 100, $this->multicurrency_tx, $pu_ht_devise);
 			$total_ht  = $tabprice[0];
 			$total_tva = $tabprice[1];
@@ -704,13 +711,23 @@ class SupplierProposal extends CommonObject
 				$txtva = preg_replace('/\s*\(.*\)/', '', $txtva); // Remove code into vatrate.
 			}
 
+<<<<<<< HEAD
+=======
+			if (!empty($conf->multicurrency->enabled) && $pu_ht_devise > 0) {
+				$pu = 0;
+			}
+
+>>>>>>> 7410d50b6bd603801c02504435d89fd2da6570c4
 			$tabprice = calcul_price_total($qty, $pu, $remise_percent, $txtva, $txlocaltax1, $txlocaltax2, 0, $price_base_type, $info_bits, $type, $this->thirdparty, $localtaxes_type, 100, $this->multicurrency_tx, $pu_ht_devise);
 			$total_ht  = $tabprice[0];
 			$total_tva = $tabprice[1];
 			$total_ttc = $tabprice[2];
 			$total_localtax1 = $tabprice[9];
 			$total_localtax2 = $tabprice[10];
+<<<<<<< HEAD
 			$pu = $pu_ht = $tabprice[3];
+=======
+>>>>>>> 7410d50b6bd603801c02504435d89fd2da6570c4
 
 			// MultiCurrency
 			$multicurrency_total_ht  = $tabprice[16];

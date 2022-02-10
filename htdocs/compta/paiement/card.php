@@ -33,7 +33,10 @@ require_once DOL_DOCUMENT_ROOT.'/compta/facture/class/facture.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/modules/facture/modules_facture.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/payments.lib.php';
 if (!empty($conf->banque->enabled)) require_once DOL_DOCUMENT_ROOT.'/compta/bank/class/account.class.php';
+<<<<<<< HEAD
 if (!empty($conf->margin->enabled)) require_once DOL_DOCUMENT_ROOT.'/core/class/html.formmargin.class.php';
+=======
+>>>>>>> 7410d50b6bd603801c02504435d89fd2da6570c4
 
 // Load translation files required by the page
 $langs->loadLangs(array('bills', 'banks', 'companies'));
@@ -380,10 +383,13 @@ if ($resql)
 	if (!empty($conf->multicompany->enabled) && !empty($conf->global->MULTICOMPANY_INVOICE_SHARING_ENABLED)) print '<td>'.$langs->trans('Entity').'</td>';
 	print '<td class="right">'.$langs->trans('ExpectedToPay').'</td>';
 	print '<td class="right">'.$langs->trans('PayedByThisPayment').'</td>';
+<<<<<<< HEAD
 	//Add Margin
 	if (!empty($conf->margin->enabled)) {
 		print '<td class="right">'.$langs->trans('Margin').'</td>';
 	}
+=======
+>>>>>>> 7410d50b6bd603801c02504435d89fd2da6570c4
 	print '<td class="right">'.$langs->trans('RemainderToPay').'</td>';
 	print '<td class="right">'.$langs->trans('Status').'</td>';
 	print "</tr>\n";
@@ -399,6 +405,7 @@ if ($resql)
 			$invoice = new Facture($db);
 			$invoice->fetch($objp->facid);
 
+<<<<<<< HEAD
 			// Add Margin
 			if (!empty($conf->margin->enabled)) {
 				$formmargin = new FormMargin($db);
@@ -407,6 +414,8 @@ if ($resql)
 				$marginInfo = $formmargin->getMarginInfosArray($invoice);
 			}
 
+=======
+>>>>>>> 7410d50b6bd603801c02504435d89fd2da6570c4
 			$paiement = $invoice->getSommePaiement();
 			$creditnotes = $invoice->getSumCreditNotesUsed();
 			$deposits = $invoice->getSumDepositsUsed();
@@ -438,11 +447,14 @@ if ($resql)
 			// Amount payed
 			print '<td class="right">'.price($objp->amount).'</td>';
 
+<<<<<<< HEAD
 			// Add margin
 			if (!empty($conf->margin->enabled)) {
 				print '<td class="right">'.price($marginInfo['total_margin']).'</td>';
 			}
 
+=======
+>>>>>>> 7410d50b6bd603801c02504435d89fd2da6570c4
 			// Remain to pay
 			print '<td class="right">'.price($remaintopay).'</td>';
 
