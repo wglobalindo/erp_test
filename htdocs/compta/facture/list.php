@@ -1630,6 +1630,7 @@ if ($resql)
 			}
 			// Total margin
 <<<<<<< HEAD
+<<<<<<< HEAD
 			if (!empty($arrayfields['total_margin']['checked'])) {
 				print '<td class="right nowrap">'.price($marginInfo['total_margin']).'</td>';
 				if (!$i) {
@@ -1645,6 +1646,17 @@ if ($resql)
 				print '<td class="right nowrap">'.price($marginInfo['total_margin']).'</td>';
 				if (!$i) $totalarray['nbfield']++;
 >>>>>>> 7410d50b6bd603801c02504435d89fd2da6570c4
+=======
+			if (!empty($arrayfields['total_margin']['checked'])) {
+				print '<td class="right nowrap">'.price($marginInfo['total_margin']).'</td>';
+				if (!$i) {
+					$totalarray['nbfield']++;
+				}
+				if (!$i) {
+					$totalarray['pos'][$totalarray['nbfield']] = 'total_margin';
+				}
+				$totalarray['val']['total_margin'] += $marginInfo['total_margin'];
+>>>>>>> 4e20762cca257a8231ec6999eea087abd67b8b50
 			}
 			// Total margin rate
 			if (!empty($arrayfields['total_margin_rate']['checked']))

@@ -34,9 +34,13 @@ require_once DOL_DOCUMENT_ROOT.'/core/modules/facture/modules_facture.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/payments.lib.php';
 if (!empty($conf->banque->enabled)) require_once DOL_DOCUMENT_ROOT.'/compta/bank/class/account.class.php';
 <<<<<<< HEAD
+<<<<<<< HEAD
 if (!empty($conf->margin->enabled)) require_once DOL_DOCUMENT_ROOT.'/core/class/html.formmargin.class.php';
 =======
 >>>>>>> 7410d50b6bd603801c02504435d89fd2da6570c4
+=======
+if (!empty($conf->margin->enabled)) require_once DOL_DOCUMENT_ROOT.'/core/class/html.formmargin.class.php';
+>>>>>>> 4e20762cca257a8231ec6999eea087abd67b8b50
 
 // Load translation files required by the page
 $langs->loadLangs(array('bills', 'banks', 'companies'));
@@ -384,12 +388,18 @@ if ($resql)
 	print '<td class="right">'.$langs->trans('ExpectedToPay').'</td>';
 	print '<td class="right">'.$langs->trans('PayedByThisPayment').'</td>';
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 4e20762cca257a8231ec6999eea087abd67b8b50
 	//Add Margin
 	if (!empty($conf->margin->enabled)) {
 		print '<td class="right">'.$langs->trans('Margin').'</td>';
 	}
+<<<<<<< HEAD
 =======
 >>>>>>> 7410d50b6bd603801c02504435d89fd2da6570c4
+=======
+>>>>>>> 4e20762cca257a8231ec6999eea087abd67b8b50
 	print '<td class="right">'.$langs->trans('RemainderToPay').'</td>';
 	print '<td class="right">'.$langs->trans('Status').'</td>';
 	print "</tr>\n";
@@ -406,6 +416,9 @@ if ($resql)
 			$invoice->fetch($objp->facid);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 4e20762cca257a8231ec6999eea087abd67b8b50
 			// Add Margin
 			if (!empty($conf->margin->enabled)) {
 				$formmargin = new FormMargin($db);
@@ -414,8 +427,11 @@ if ($resql)
 				$marginInfo = $formmargin->getMarginInfosArray($invoice);
 			}
 
+<<<<<<< HEAD
 =======
 >>>>>>> 7410d50b6bd603801c02504435d89fd2da6570c4
+=======
+>>>>>>> 4e20762cca257a8231ec6999eea087abd67b8b50
 			$paiement = $invoice->getSommePaiement();
 			$creditnotes = $invoice->getSumCreditNotesUsed();
 			$deposits = $invoice->getSumDepositsUsed();
@@ -448,13 +464,19 @@ if ($resql)
 			print '<td class="right">'.price($objp->amount).'</td>';
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 4e20762cca257a8231ec6999eea087abd67b8b50
 			// Add margin
 			if (!empty($conf->margin->enabled)) {
 				print '<td class="right">'.price($marginInfo['total_margin']).'</td>';
 			}
 
+<<<<<<< HEAD
 =======
 >>>>>>> 7410d50b6bd603801c02504435d89fd2da6570c4
+=======
+>>>>>>> 4e20762cca257a8231ec6999eea087abd67b8b50
 			// Remain to pay
 			print '<td class="right">'.price($remaintopay).'</td>';
 
