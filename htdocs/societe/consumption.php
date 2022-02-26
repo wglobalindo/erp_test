@@ -58,6 +58,9 @@ $sprod_fulldescr = GETPOST("sprod_fulldescr");
 $month = GETPOST('month', 'int');
 $year = GETPOST('year', 'int');
 
+// Search Customer or Supplier Ref
+$sdoc_ref = GETPOST("sdoc_ref");
+
 // Clean up on purge search criteria ?
 if (GETPOST('button_removefilter_x', 'alpha') || GETPOST('button_removefilter.x', 'alpha') || GETPOST('button_removefilter', 'alpha')) // Both test are required to be compatible with all browsers
 {
@@ -65,6 +68,10 @@ if (GETPOST('button_removefilter_x', 'alpha') || GETPOST('button_removefilter.x'
 	$sprod_fulldescr = '';
 	$year = '';
 	$month = '';
+
+	// Search Customer or Supplier Ref
+	$sdoc_ref = '';
+
 }
 // Customer or supplier selected in drop box
 $thirdTypeSelect = GETPOST("third_select_id");
@@ -210,12 +217,20 @@ if ($type_element == 'invoice')
 	require_once DOL_DOCUMENT_ROOT.'/compta/facture/class/facture.class.php';
 	$documentstatic = new Facture($db);
 	$sql_select = 'SELECT f.rowid as doc_id, f.ref as doc_number, f.type as doc_type, f.datef as dateprint, f.fk_statut as status, f.paye as paid, ';
+	
+	// Add Customer Ref
+	$sql_select .= 'f.ref_client as doc_ref,';
+
 	$tables_from = MAIN_DB_PREFIX."facture as f,".MAIN_DB_PREFIX."facturedet as d";
 	$where = " WHERE f.fk_soc = s.rowid AND s.rowid = ".$socid;
 	$where .= " AND d.fk_facture = f.rowid";
 	$where .= " AND f.entity IN (".getEntity('invoice').")";
 	$dateprint = 'f.datef';
 	$doc_number = 'f.ref';
+
+	// Add Customer Ref
+	$doc_ref = 'f.ref_client';
+
 	$thirdTypeSelect = 'customer';
 }
 if ($type_element == 'propal')
@@ -236,12 +251,20 @@ if ($type_element == 'order')
 	require_once DOL_DOCUMENT_ROOT.'/commande/class/commande.class.php';
 	$documentstatic = new Commande($db);
 	$sql_select = 'SELECT c.rowid as doc_id, c.ref as doc_number, \'1\' as doc_type, c.date_commande as dateprint, c.fk_statut as status, ';
+		
+	// Add Customer Ref
+	$sql_select .= 'c.ref_client as doc_ref,';
+
 	$tables_from = MAIN_DB_PREFIX."commande as c,".MAIN_DB_PREFIX."commandedet as d";
 	$where = " WHERE c.fk_soc = s.rowid AND s.rowid = ".$socid;
 	$where .= " AND d.fk_commande = c.rowid";
 	$where .= " AND c.entity = ".$conf->entity;
 	$dateprint = 'c.date_commande';
 	$doc_number = 'c.ref';
+
+	// Add Customer Ref
+	$doc_ref = 'c.ref_client';
+	
 	$thirdTypeSelect = 'customer';
 }
 if ($type_element == 'supplier_invoice')
@@ -317,6 +340,10 @@ if (!empty($sql_select))
 	$sql .= $where;
 	$sql .= dolSqlDateFilter($dateprint, 0, $month, $year);
 	if ($sref) $sql .= " AND ".$doc_number." LIKE '%".$db->escape($sref)."%'";
+
+	// Search Customer or Supplier Ref
+	if ($sdoc_ref) $sql .= " AND ".$doc_ref." LIKE '%".$db->escape($sdoc_ref)."%'";
+
 	if ($sprod_fulldescr)
 	{
 	    $sql .= " AND (d.description LIKE '%".$db->escape($sprod_fulldescr)."%' OR d.description LIKE '%".$db->escape(dol_htmlentities($sprod_fulldescr))."%'";
@@ -371,6 +398,9 @@ if ($sql_select)
 	if ($year) $param .= "&year=".urlencode($year);
 	if ($optioncss != '') $param .= '&optioncss='.urlencode($optioncss);
 
+	// Search Customer or Supplier Ref
+	if ($sdoc_ref) $param .= "&sdoc_ref=".urlencode($sdoc_ref);
+
 	print_barre_liste($langs->trans('ProductsIntoElements').' '.$typeElementString.' '.$button, $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sortorder, '', $num, $totalnboflines, '', 0, '', '', $limit);
 
 	print '<div class="div-table-responsive-no-min">';
@@ -381,6 +411,14 @@ if ($sql_select)
 	print '<td class="liste_titre left">';
 	print '<input class="flat" type="text" name="sref" size="8" value="'.$sref.'">';
 	print '</td>';
+
+	// Add Customer or Supplier Ref
+	if ($type_element == 'order' || $type_element == 'invoice'){
+		print '<td class="liste_titre left">';
+		print '<input class="flat" type="text" name="sdoc_ref" size="8" value="'.$sdoc_ref.'">';
+		print '</td>';
+	}
+
 	print '<td class="liste_titre nowrap center">'; // date
 	print $formother->select_month($month ? $month : -1, 'month', 1, 0, 'valignmiddle');
 	$formother->select_year($year ? $year : -1, 'year', 1, 20, 1);
@@ -413,6 +451,12 @@ if ($sql_select)
 	// Titles with sort buttons
 	print '<tr class="liste_titre">';
 	print_liste_field_titre('Ref', $_SERVER['PHP_SELF'], 'doc_number', '', $param, '', $sortfield, $sortorder, 'left ');
+	
+	// Add Customer or Supplier Ref
+    if ($type_element == 'order' || $type_element == 'invoice') {
+        print_liste_field_titre('Ref. customer', $_SERVER['PHP_SELF'], 'doc_ref', '', $param, '', $sortfield, $sortorder, 'left ');
+    }
+
 	print_liste_field_titre('Date', $_SERVER['PHP_SELF'], 'dateprint', '', $param, 'width="150"', $sortfield, $sortorder, 'center ');
 	print_liste_field_titre('Status', $_SERVER['PHP_SELF'], 'fk_statut', '', $param, '', $sortfield, $sortorder, 'center ');
 	print_liste_field_titre('Product', $_SERVER['PHP_SELF'], '', '', $param, '', $sortfield, $sortorder, 'left ');
@@ -435,6 +479,10 @@ if ($sql_select)
 	{
 		$documentstatic->id = $objp->doc_id;
 		$documentstatic->ref = $objp->doc_number;
+
+		// Add Customer or Supplier Ref
+		$documentstatic->doc_ref = $objp->doc_ref;
+
 		$documentstatic->type = $objp->doc_type;
 		$documentstatic->fk_statut = $objp->status;
 		$documentstatic->fk_status = $objp->status;
@@ -449,6 +497,14 @@ if ($sql_select)
 		print '<td class="nobordernopadding nowrap" width="100">';
 		print $documentstatic->getNomUrl(1);
 		print '</td>';
+
+		// Add Customer or Supplier Ref
+		if ($type_element == 'order'|| $type_element == 'invoice'){
+			print '<td class="nobordernopadding nowrap" width="100">';
+			print $documentstatic->doc_ref;
+			print '</td>';
+		}
+
 		print '<td class="center" width="80">'.dol_print_date($db->jdate($objp->dateprint), 'day').'</td>';
 
 		// Status
