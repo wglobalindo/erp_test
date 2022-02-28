@@ -272,6 +272,10 @@ if ($type_element == 'supplier_invoice')
 	require_once DOL_DOCUMENT_ROOT.'/fourn/class/fournisseur.facture.class.php';
 	$documentstatic = new FactureFournisseur($db);
 	$sql_select = 'SELECT f.rowid as doc_id, f.ref as doc_number, \'1\' as doc_type, f.datef as dateprint, f.fk_statut as status, f.paye as paid, ';
+
+	// Add Supplier Ref
+	$sql_select .= 'f.ref_supplier as doc_ref,';
+
 	$tables_from = MAIN_DB_PREFIX."facture_fourn as f,".MAIN_DB_PREFIX."facture_fourn_det as d";
 	$where = " WHERE f.fk_soc = s.rowid AND s.rowid = ".$socid;
 	$where .= " AND d.fk_facture_fourn = f.rowid";
@@ -279,6 +283,9 @@ if ($type_element == 'supplier_invoice')
 	$dateprint = 'f.datef';
 	$doc_number = 'f.ref';
 	$thirdTypeSelect = 'supplier';
+
+	// Add Supplier Ref
+	$doc_ref = 'c.ref_supplier';
 }
 if ($type_element == 'supplier_proposal')
 {
@@ -298,6 +305,10 @@ if ($type_element == 'supplier_order')
 	require_once DOL_DOCUMENT_ROOT.'/fourn/class/fournisseur.commande.class.php';
 	$documentstatic = new CommandeFournisseur($db);
 	$sql_select = 'SELECT c.rowid as doc_id, c.ref as doc_number, \'1\' as doc_type, c.date_valid as dateprint, c.fk_statut as status, ';
+
+	// Add Supplier Ref
+	$sql_select .= 'c.ref_supplier as doc_ref,';
+
 	$tables_from = MAIN_DB_PREFIX."commande_fournisseur as c,".MAIN_DB_PREFIX."commande_fournisseurdet as d";
 	$where = " WHERE c.fk_soc = s.rowid AND s.rowid = ".$socid;
 	$where .= " AND d.fk_commande = c.rowid";
@@ -305,6 +316,9 @@ if ($type_element == 'supplier_order')
 	$dateprint = 'c.date_valid';
 	$doc_number = 'c.ref';
 	$thirdTypeSelect = 'supplier';
+
+	// Add Supplier Ref
+	$doc_ref = 'c.ref_supplier';
 }
 if ($type_element == 'contract')
 { 	// Order
@@ -413,7 +427,7 @@ if ($sql_select)
 	print '</td>';
 
 	// Add Customer or Supplier Ref
-	if ($type_element == 'order' || $type_element == 'invoice'){
+	if ($type_element == 'order' || $type_element == 'invoice' || $type_element == 'supplier_order' || $type_element == 'supplier_invoice'){
 		print '<td class="liste_titre left">';
 		print '<input class="flat" type="text" name="sdoc_ref" size="8" value="'.$sdoc_ref.'">';
 		print '</td>';
@@ -453,8 +467,15 @@ if ($sql_select)
 	print_liste_field_titre('Ref', $_SERVER['PHP_SELF'], 'doc_number', '', $param, '', $sortfield, $sortorder, 'left ');
 	
 	// Add Customer or Supplier Ref
-    if ($type_element == 'order' || $type_element == 'invoice') {
-        print_liste_field_titre('Ref. customer', $_SERVER['PHP_SELF'], 'doc_ref', '', $param, '', $sortfield, $sortorder, 'left ');
+    if ($type_element == 'order' || $type_element == 'invoice' || $type_element == 'supplier_order' || $type_element == 'supplier_invoice') {
+		$doc_ref_label = 'Ref. customer';
+		
+		// case Supplier
+		if ($type_element == 'supplier_order' || $type_element == 'supplier_invoice'){
+			$doc_ref_label = 'Ref. supplier';
+		}
+
+        print_liste_field_titre($doc_ref_label, $_SERVER['PHP_SELF'], 'doc_ref', '', $param, '', $sortfield, $sortorder, 'left ');
     }
 
 	print_liste_field_titre('Date', $_SERVER['PHP_SELF'], 'dateprint', '', $param, 'width="150"', $sortfield, $sortorder, 'center ');
@@ -499,7 +520,7 @@ if ($sql_select)
 		print '</td>';
 
 		// Add Customer or Supplier Ref
-		if ($type_element == 'order'|| $type_element == 'invoice'){
+		if ($type_element == 'order'|| $type_element == 'invoice' || $type_element == 'supplier_order' || $type_element == 'supplier_invoice'){
 			print '<td class="nobordernopadding nowrap" width="100">';
 			print $documentstatic->doc_ref;
 			print '</td>';
@@ -681,7 +702,15 @@ if ($sql_select)
 
 	print '<tr class="liste_total">';
 	print '<td>'.$langs->trans('Total').'</td>';
-	print '<td colspan="3"></td>';
+
+	// Add Customer or Supplier Ref
+	if ($type_element == 'order' || $type_element == 'invoice' || $type_element == 'supplier_order' || $type_element == 'supplier_invoice'){
+		print '<td colspan="4"></td>';
+    }
+	else {
+        print '<td colspan="3"></td>';
+    }
+
 	print '<td class="right">'.$total_qty.'</td>';
 	// Add currency price
 	if (!empty($conf->multicurrency->enabled) && ($object->multicurrency_code != $conf->currency)) 
