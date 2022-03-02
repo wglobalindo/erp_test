@@ -137,44 +137,18 @@ class pdf_pack_list extends ModelePDFCommandes
 		if (empty($this->emetteur->country_code)) $this->emetteur->country_code=substr($langs->defaultlang,-2);    // By default, if was not defined
 
 		// Define position of columns
+
 		// posxno
 		$this->posxno=$this->marge_gauche+1;
 
-		if($conf->global->PRODUCT_USE_UNITS)
-		{
-			$this->posxdesc=0;
-			$this->posxtva=101;
-			$this->posxup=0;
-			$this->posxqty=135;
-			$this->posxunit=151;
-		}
-		else
-		{
-			$this->posxdesc=20;
-			$this->posxtva=0;
-			$this->posxup=0;
-			$this->posxqty=180;
-		}
-		$this->posxdiscount=0;
-		$this->postotalht=0;
-		if (! empty($conf->global->MAIN_GENERATE_DOCUMENTS_WITHOUT_VAT) || ! empty($conf->global->MAIN_GENERATE_DOCUMENTS_WITHOUT_VAT_COLUMN)) $this->posxtva=$this->posxup;
-		$this->posxpicture=$this->posxtva - (empty($conf->global->MAIN_DOCUMENTS_WITH_PICTURE_WIDTH)?20:$conf->global->MAIN_DOCUMENTS_WITH_PICTURE_WIDTH);	// width of images
-		if ($this->page_largeur < 210) // To work with US executive format
-		{
-			$this->posxpicture-=20;
-			$this->posxtva-=20;
-			$this->posxup-=20;
-			$this->posxqty-=20;
-			$this->posxunit-=20;
-			$this->posxdiscount-=20;
-			$this->postotalht-=20;
-		}
+		$this->posxdesc=20;
 
-		$this->tva=array();
-		$this->localtax1=array();
-		$this->localtax2=array();
-		$this->atleastoneratenotnull=0;
-		$this->atleastonediscount=0;
+		// posxunit
+		$this->posxunit=155;
+
+		$this->posxqty=180;
+	
+		
 	}
 
 	/**
@@ -466,114 +440,27 @@ class pdf_pack_list extends ModelePDFCommandes
 					$pdf->SetXY($this->posxno, $curY);
 					$pdf->MultiCell ($this->posxdesc-2-$this->posxno,3, $object->lines[$i]->rang,0,'C');
 
-					//disable VAT Rate
-					/*
-					if (empty($conf->global->MAIN_GENERATE_DOCUMENTS_WITHOUT_VAT) && empty($conf->global->MAIN_GENERATE_DOCUMENTS_WITHOUT_VAT_COLUMN))
-					{
-						$vat_rate = pdf_getlinevatrate($object, $i, $outputlangs, $hidedetails);
-						$pdf->SetXY($this->posxtva-5, $curY);
-						$pdf->MultiCell($this->posxup-$this->posxtva+4, 3, $vat_rate, 0, 'R');
+					// Unit
+					$unit_num= $object->lines[$i]->array_options['options_unit'];
+					switch ($unit_num){
+						case 0: $unit_name ="Pcs"; break;
+						case 1: $unit_name ="Set"; break;
+						case 2: $unit_name ="Dozen"; break;
+						case 3: $unit_name ="Pair"; break;
+						case 4: $unit_name ="Box"; break;
+						case 5: $unit_name ="Roll"; break;
+						case 6: $unit_name ="Meter"; break;
+						case 7: $unit_name ="Liter"; break;
+						case 8: $unit_name ="Pack"; break;
+						case 9: $unit_name ="Drum"; break;
 					}
-					
+					$pdf->SetXY($this->posxunit, $curY);
+					$pdf->MultiCell($this->posxqty-$this->posxunit-0.8, 4, $unit_name, 0, 'C');
 
-					// Unit price before discount
-					$up_excl_tax = pdf_getlineupexcltax($object, $i, $outputlangs, $hidedetails);
-					$pdf->SetXY($this->posxup, $curY);
-					$pdf->MultiCell($this->posxqty-$this->posxup-0.8, 3, $up_excl_tax, 0, 'R', 0);
-					*/
 					// Quantity
 					$qty = pdf_getlineqty($object, $i, $outputlangs, $hidedetails);
 					$pdf->SetXY($this->posxqty, $curY);
-					// Enough for 6 chars
-					if($conf->global->PRODUCT_USE_UNITS)
-					{
-						$pdf->MultiCell($this->posxunit-$this->posxqty-0.8, 4, $qty, 0, 'C');
-					}
-					else
-					{
-						$pdf->MultiCell($this->posxdiscount-$this->posxqty-0.8, 4, $qty, 0, 'C');
-					}
-
-					// Unit
-					if($conf->global->PRODUCT_USE_UNITS)
-					{
-						$unit = pdf_getlineunit($object, $i, $outputlangs, $hidedetails, $hookmanager);
-						$pdf->SetXY($this->posxunit, $curY);
-            $currency_bill = $object->multicurrency_code;
-  					if ($currency_bill=="IDR")
-              {
-  						$posxunit = sprintf("%.2f", filter_var($posxunit,519)*0.01);
-  						$posxunit = number_format($posxunit,2,',','.');
-              }
-  					else
-  						{
-  							$posxunit = sprintf("%.2f", filter_var($posxunit,519)*0.01);
-  							$posxunit = number_format($posxunit,2,'.'.',');
-  						}
-						$pdf->MultiCell($this->posxdiscount-$this->posxunit-0.8, 4, $unit, 0, 'L');
-					}
-					/*
-					// Discount on line
-					$pdf->SetXY($this->posxdiscount, $curY);
-					if ($object->lines[$i]->remise_percent)
-					{
-						$pdf->SetXY($this->posxdiscount-2, $curY);
-						$remise_percent = pdf_getlineremisepercent($object, $i, $outputlangs, $hidedetails);
-						$pdf->MultiCell($this->postotalht-$this->posxdiscount+2, 3, $remise_percent, 0, 'R');
-					}
-
-					// Total HT line
-					$total_excl_tax = pdf_getlinetotalexcltax($object, $i, $outputlangs, $hidedetails);
-					$pdf->SetXY($this->postotalht, $curY);
-					$pdf->MultiCell($this->page_largeur-$this->marge_droite-$this->postotalht, 3, $total_excl_tax, 0, 'R', 0);
-					*/
-					//cunrrency_format
-					$currency_bill = $object->multicurrency_code;
-					if ($currency_bill=="IDR")
-            {
-						$total_excl_tax = sprintf("%.2f", filter_var($total_excl_tax,519)*0.01);
-						$total_excl_tax = number_format($total_excl_tax,2,',','.');
-            }
-					else
-						{
-							$total_excl_tax = sprintf("%.2f", filter_var($total_excl_tax,519)*0.01);
-							$total_excl_tax = number_format($total_excl_tax,2,'.'.',');
-						}
-					// Collecte des totaux par valeur de tva dans $this->tva["taux"]=total_tva
-					if ($conf->multicurrency->enabled && $object->multicurrency_tx != 1) $tvaligne=$object->lines[$i]->multicurrency_total_tva;
-					else $tvaligne=$object->lines[$i]->total_tva;
-
-					$localtax1ligne=$object->lines[$i]->total_localtax1;
-					$localtax2ligne=$object->lines[$i]->total_localtax2;
-					$localtax1_rate=$object->lines[$i]->localtax1_tx;
-					$localtax2_rate=$object->lines[$i]->localtax2_tx;
-					$localtax1_type=$object->lines[$i]->localtax1_type;
-					$localtax2_type=$object->lines[$i]->localtax2_type;
-
-					if ($object->remise_percent) $tvaligne-=($tvaligne*$object->remise_percent)/100;
-					if ($object->remise_percent) $localtax1ligne-=($localtax1ligne*$object->remise_percent)/100;
-					if ($object->remise_percent) $localtax2ligne-=($localtax2ligne*$object->remise_percent)/100;
-
-					$vatrate=(string) $object->lines[$i]->tva_tx;
-
-					// Retrieve type from database for backward compatibility with old records
-					if ((! isset($localtax1_type) || $localtax1_type=='' || ! isset($localtax2_type) || $localtax2_type=='') // if tax type not defined
-					&& (! empty($localtax1_rate) || ! empty($localtax2_rate))) // and there is local tax
-					{
-						$localtaxtmp_array=getLocalTaxesFromRate($vatrate,0,$object->thirdparty,$mysoc);
-						$localtax1_type = $localtaxtmp_array[0];
-						$localtax2_type = $localtaxtmp_array[2];
-					}
-
-				    // retrieve global local tax
-					if ($localtax1_type && $localtax1ligne != 0)
-						$this->localtax1[$localtax1_type][$localtax1_rate]+=$localtax1ligne;
-					if ($localtax2_type && $localtax2ligne != 0)
-						$this->localtax2[$localtax2_type][$localtax2_rate]+=$localtax2ligne;
-
-					if (($object->lines[$i]->info_bits & 0x01) == 0x01) $vatrate.='*';
-					if (! isset($this->tva[$vatrate])) 				$this->tva[$vatrate]=0;
-					$this->tva[$vatrate] += $tvaligne;
+					$pdf->MultiCell($this->marge_droite-$this->posxqty, 4, $qty, 0, 'C');
 
 					// Add line
 					if (! empty($conf->global->MAIN_PDF_DASH_BETWEEN_LINES) && $i < ($nblignes - 1))
@@ -1213,7 +1100,7 @@ class pdf_pack_list extends ModelePDFCommandes
 		// Output Rect
 		$this->printRect($pdf,$this->marge_gauche, $tab_top, $this->page_largeur-$this->marge_gauche-$this->marge_droite, $tab_height, $hidetop, $hidebottom);	// Rect prend une longueur en 3eme param et 4eme param
 
-		// posxno
+		// Posxno
 		if (empty($hidetop))
 		{
 			//$pdf->line($this->postest2-1, $tab_top, $this->posttest2-1, $tab_top + $tab_height);
@@ -1225,6 +1112,7 @@ class pdf_pack_list extends ModelePDFCommandes
 		}
 		$pdf->line($this->posxdesc-1, $tab_top, $this->posxdesc-1, $tab_top + $tab_height);
 
+		// Description
 		if (empty($hidetop))
 		{
 			$pdf->line($this->marge_gauche, $tab_top+5, $this->page_largeur-$this->marge_droite, $tab_top+5);	// line prend une position y en 2eme param et 4eme param
@@ -1232,67 +1120,28 @@ class pdf_pack_list extends ModelePDFCommandes
 			$pdf->SetXY($this->posxdesc-1, $tab_top+1);
 			$pdf->MultiCell(108,2, $outputlangs->transnoentities("Designation"),'','L');
 		}
-		//disable VAT
-		/*
-		if (empty($conf->global->MAIN_GENERATE_DOCUMENTS_WITHOUT_VAT) && empty($conf->global->MAIN_GENERATE_DOCUMENTS_WITHOUT_VAT_COLUMN))
-		{
-			$pdf->line($this->posxtva-1, $tab_top, $this->posxtva-1, $tab_top + $tab_height);
-			if (empty($hidetop))
-			{
-				$pdf->SetXY($this->posxtva-3, $tab_top+1);
-				$pdf->MultiCell($this->posxup-$this->posxtva+3,2, $outputlangs->transnoentities("VAT"),'','C');
-			}
-		}
-		*/
-		$pdf->line($this->posxup-1, $tab_top, $this->posxup-1, $tab_top + $tab_height);
+		
+		// Unit
 		if (empty($hidetop))
 		{
-			$pdf->SetXY($this->posxup-1, $tab_top+1);
-			$pdf->MultiCell($this->posxqty-$this->posxup-1,2, $outputlangs->transnoentities("PriceUHT"),'','C');
+			$pdf->line($this->posxunit-1, $tab_top, $this->posxunit-1, $tab_top + $tab_height);
+
+			$pdf->SetXY($this->posxunit-1, $tab_top+1);
+			$pdf->MultiCell($this->posxqty-$this->posxunit,2, $outputlangs->transnoentities("Unit"),'','C');
 		}
 
-		$pdf->line($this->posxqty-1, $tab_top, $this->posxqty-1, $tab_top + $tab_height);
+		// Qty
 		if (empty($hidetop))
 		{
+			$pdf->line($this->posxqty-1, $tab_top, $this->posxqty-1, $tab_top + $tab_height);
+
 			$pdf->SetXY($this->posxqty-1, $tab_top+1);
-			if($conf->global->PRODUCT_USE_UNITS)
-			{
-				$pdf->MultiCell($this->posxunit-$this->posxqty-1,2, $outputlangs->transnoentities("Qty"),'','C');
-			}
-			else
-			{
-				$pdf->MultiCell($this->posxdiscount-$this->posxqty-1,2, $outputlangs->transnoentities("Qty"),'','C');
-			}
+			$pdf->MultiCell($this->marge_droite-$this->posxqty-1,2, $outputlangs->transnoentities("Qty"),'','C');
 		}
 
-		if($conf->global->PRODUCT_USE_UNITS) {
-			$pdf->line($this->posxunit - 1, $tab_top, $this->posxunit - 1, $tab_top + $tab_height);
-			if (empty($hidetop)) {
-				$pdf->SetXY($this->posxunit - 1, $tab_top + 1);
-				$pdf->MultiCell($this->posxdiscount - $this->posxunit - 1, 2, $outputlangs->transnoentities("Unit"), '',
-					'C');
-			}
-		}
-
-		$pdf->line($this->posxdiscount-1, $tab_top, $this->posxdiscount-1, $tab_top + $tab_height);
-		if (empty($hidetop))
-		{
-			if ($this->atleastonediscount)
-			{
-				$pdf->SetXY($this->posxdiscount-1, $tab_top+1);
-				$pdf->MultiCell($this->postotalht-$this->posxdiscount+1,2, $outputlangs->transnoentities("ReductionShort"),'','C');
-			}
-		}
-
-		if ($this->atleastonediscount)
-		{
-			$pdf->line($this->postotalht, $tab_top, $this->postotalht, $tab_top + $tab_height);
-		}
-		if (empty($hidetop))
-		{
-			$pdf->SetXY($this->postotalht-1, $tab_top+1);
-			$pdf->MultiCell(30,2, $outputlangs->transnoentities("TotalHT"),'','C');
-		}
+		
+		
+		
 	}
 
 	/**
