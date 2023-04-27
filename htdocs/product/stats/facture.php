@@ -147,7 +147,7 @@ if ($id > 0 || !empty($ref))
 		{
 			$sql = "SELECT DISTINCT s.nom as name, s.rowid as socid, s.code_client,";
 			$sql .= " f.ref, f.datef, f.paye, f.type, f.fk_statut as statut, f.rowid as facid,";
-			$sql .= " d.rowid, d.total_ht as total_ht, d.qty"; // We must keep the d.rowid here to not loose record because of the distinct used to ignore duplicate line when link on societe_commerciaux is used
+			$sql .= " d.rowid, d.subprice as subprice, d.total_ht as total_ht, d.qty"; // We must keep the d.rowid here to not loose record because of the distinct used to ignore duplicate line when link on societe_commerciaux is used
 			if (!$user->rights->societe->client->voir && !$socid) $sql .= ", sc.fk_soc, sc.fk_user ";
 			$sql .= " FROM ".MAIN_DB_PREFIX."societe as s";
 			$sql .= ", ".MAIN_DB_PREFIX."facture as f";
@@ -220,6 +220,7 @@ if ($id > 0 || !empty($ref))
 				print_liste_field_titre("CustomerCode", $_SERVER["PHP_SELF"], "s.code_client", "", $option, '', $sortfield, $sortorder);
 				print_liste_field_titre("DateInvoice", $_SERVER["PHP_SELF"], "f.datef", "", $option, 'align="center"', $sortfield, $sortorder);
 				print_liste_field_titre("Qty", $_SERVER["PHP_SELF"], "d.qty", "", $option, 'align="center"', $sortfield, $sortorder);
+				print_liste_field_titre("PriceUHT", $_SERVER["PHP_SELF"], "d.subprice", "", $option, 'align="right"', $sortfield, $sortorder);
 				print_liste_field_titre("AmountHT", $_SERVER["PHP_SELF"], "d.total_ht", "", $option, 'align="right"', $sortfield, $sortorder);
 				print_liste_field_titre("Status", $_SERVER["PHP_SELF"], "f.paye,f.fk_statut", "", $option, 'align="right"', $sortfield, $sortorder);
 				print "</tr>\n";
@@ -249,6 +250,7 @@ if ($id > 0 || !empty($ref))
 						print '<td class="center">';
 						print dol_print_date($db->jdate($objp->datef), 'dayhour')."</td>";
 						print '<td class="center">'.$objp->qty."</td>\n";
+						print '<td align="right">'.price($objp->subprice)."</td>\n";
 						print '<td align="right">'.price($objp->total_ht)."</td>\n";
 						print '<td align="right">'.$invoicestatic->LibStatut($objp->paye, $objp->statut, 5, $paiement, $objp->type).'</td>';
 						print "</tr>\n";
@@ -260,6 +262,7 @@ if ($id > 0 || !empty($ref))
 				else print '<td class="left">'.$langs->trans("Totalforthispage").'</td>';
 				print '<td colspan="3"></td>';
 				print '<td class="center">'.$total_qty.'</td>';
+				print '<td></td>';
 				print '<td align="right">'.price($total_ht).'</td>';
 				print '<td></td>';
 				print "</table>";
