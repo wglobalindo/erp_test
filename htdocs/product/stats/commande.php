@@ -201,7 +201,7 @@ if ($id > 0 || !empty($ref))
 				print_liste_field_titre("CustomerCode", $_SERVER["PHP_SELF"], "s.code_client", "", $option, '', $sortfield, $sortorder);
 				print_liste_field_titre("OrderDate", $_SERVER["PHP_SELF"], "c.date_commande", "", $option, 'align="center"', $sortfield, $sortorder);
 				print_liste_field_titre("Qty", $_SERVER["PHP_SELF"], "d.qty", "", $option, 'align="center"', $sortfield, $sortorder);
-				print_liste_field_titre("PriceUHT", $_SERVER["PHP_SELF"], "d.subprice", "", $option, 'align="rght"', $sortfield, $sortorder);
+				print_liste_field_titre("PriceUHT", $_SERVER["PHP_SELF"], "d.subprice", "", $option, 'align="right"', $sortfield, $sortorder);
 				print_liste_field_titre("AmountHT", $_SERVER["PHP_SELF"], "d.total_ht", "", $option, 'align="right"', $sortfield, $sortorder);
 				print_liste_field_titre("Status", $_SERVER["PHP_SELF"], "c.fk_statut", "", $option, 'align="right"', $sortfield, $sortorder);
 				print "</tr>\n";
