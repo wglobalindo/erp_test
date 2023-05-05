@@ -522,7 +522,7 @@ class pdf_pronew extends ModelePDFPropales
 
 					//number
 					$pdf->SetXY($this->posno, $curY);
-					$pdf->MultiCell ($this->posxdesc-2-$this->posno,3, $object->lines[$i]->rang,0,'C');
+					$pdf->MultiCell ($this->posxdesc-2-$this->posno, 3, $i+1, 0, 'C');
 					//$pdf->MultiCell ($this->posno,3, "test",0,'C');
 					// VAT Rate
 					/*if (empty($conf->global->MAIN_GENERATE_DOCUMENTS_WITHOUT_VAT) && empty($conf->global->MAIN_GENERATE_DOCUMENTS_WITHOUT_VAT_COLUMN))
