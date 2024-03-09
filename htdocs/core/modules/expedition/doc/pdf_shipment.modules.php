@@ -308,7 +308,7 @@ class pdf_shipment extends ModelePdfExpedition
 						case 0: $unit_name ="Pcs"; break;
 						case 1: $unit_name ="Set"; break;
 						case 2: $unit_name ="Dozen"; break;
-						case 3: $unit_name ="Pair"; break;
+						case 3: $unit_name ="Botol"; break;
 						case 4: $unit_name ="Box"; break;
 						case 5: $unit_name ="Roll"; break;
 						case 6: $unit_name ="Meter"; break;
