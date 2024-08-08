@@ -111,8 +111,8 @@ class pdf_pronew extends ModelePDFPropales
 		if($conf->global->PRODUCT_USE_UNITS)
 		{
 			$this->posxdesc=20;
-			$this->posxdelivery=100;
-			//$this->posxtva=101;
+			$this->postest2=100;
+			$this->posxtva=101;
 			$this->posxup=118;
 			$this->posxqty=135;
 			$this->posxunit=151;
@@ -120,10 +120,10 @@ class pdf_pronew extends ModelePDFPropales
 		else
 		{
 			$this->posxdesc=20;
-			$this->posxdelivery=93;
-			// $this->posxtva=101;
-			$this->posxup=110;
-			$this->posxqty=138;
+			$this->postest2=93;
+			$this->posxtva=101;
+			$this->posxup=125;
+			$this->posxqty=150;
 		}
 		$this->posxdiscount=162;
 		$this->postotalht=175;
@@ -132,8 +132,8 @@ class pdf_pronew extends ModelePDFPropales
 		if ($this->page_largeur < 210) // To work with US executive format
 		{
 			$this->posxpicture-=20;
-			//$this->posxdelivery-=20;
-			// $this->posxtva-=20;
+			//$this->postest2-=20;
+			$this->posxtva-=20;
 			$this->posxup-=20;
 			$this->posxqty-=20;
 			$this->posxunit-=20;
@@ -471,7 +471,7 @@ class pdf_pronew extends ModelePDFPropales
 					$curX = $this->posxdesc-1;
 
 					$pdf->startTransaction();
-					pdf_writelinedesc($pdf,$object,$i,$outputlangs,$this->posxdelivery-$curX,3,$curX,$curY,$hideref,$hidedesc);
+					pdf_writelinedesc($pdf,$object,$i,$outputlangs,$this->postest2-$curX,3,$curX,$curY,$hideref,$hidedesc);
 					$pageposafter=$pdf->getPage();
 					if ($pageposafter > $pageposbefore)	// There is a pagebreak
 					{
@@ -479,7 +479,7 @@ class pdf_pronew extends ModelePDFPropales
 						$pageposafter=$pageposbefore;
 						//print $pageposafter.'-'.$pageposbefore;exit;
 						$pdf->setPageOrientation('', 1, $heightforfooter);	// The only function to edit the bottom margin of current page to set it.
-						pdf_writelinedesc($pdf,$object,$i,$outputlangs,$this->posxdelivery-$curX,3,$curX,$curY,$hideref,$hidedesc);
+						pdf_writelinedesc($pdf,$object,$i,$outputlangs,$this->postest2-$curX,3,$curX,$curY,$hideref,$hidedesc);
 
 						$pageposafter=$pdf->getPage();
 						$posyafter=$pdf->GetY();
@@ -546,24 +546,15 @@ class pdf_pronew extends ModelePDFPropales
 
 					// Quantity
 					$qty = pdf_getlineqty($object, $i, $outputlangs, $hidedetails);
-					$unit_index = $object->lines[$i]->array_options['options_unit'];
-
-					$extrafields = new ExtraFields($this->db);
-					$extrafields->fetch_name_optionals_label($object->table_element_line);
-					$unit_name_array = $extrafields->attributes[$object->table_element_line]['param']['unit']['options'];
-					$unit_name = $unit_name_array[$unit_index];
-
-					$qty_format = "$qty $unit_name";
-
 					$pdf->SetXY($this->posxqty, $curY);
 					// Enough for 6 chars
 					if($conf->global->PRODUCT_USE_UNITS)
 					{
-						$pdf->MultiCell($this->posxunit-$this->posxqty-0.8, 4, $qty_format, 0, 'R');
+						$pdf->MultiCell($this->posxunit-$this->posxqty-0.8, 4, $qty, 0, 'R');
 					}
 					else
 					{
-						$pdf->MultiCell($this->posxdiscount-$this->posxqty-0.8, 4, $qty_format, 0, 'R');
+						$pdf->MultiCell($this->posxdiscount-$this->posxqty-0.8, 4, $qty, 0, 'R');
 					}
 
 					// Unit
@@ -604,7 +595,7 @@ class pdf_pronew extends ModelePDFPropales
 					// test2
 					//$test2 = pdf_getlineunit($object, $i, $outputlangs, $hidedetails, $hookmanager);
 					$test2 = pdf_getlinenum($object, $i, $outputlangs, $hidedetails=0);
-					$pdf->SetXY($this->posxdelivery, $curY);
+					$pdf->SetXY($this->postest2, $curY);
 					$pdf->MultiCell (0,3, $outputlangs->convToOutputCharset($object->lines[$i]->array_options['options_stock']),0,'L');
 					//$pdf->MultiCell (0,3, $object->lines[$i]->rang,0,'L');
 
@@ -1406,9 +1397,9 @@ class pdf_pronew extends ModelePDFPropales
 		$this->printRect($pdf,$this->marge_gauche, $tab_top, $this->page_largeur-$this->marge_gauche-$this->marge_droite, $tab_height, $hidetop, $hidebottom);	// Rect prend une longueur en 3eme param et 4eme param
 		if (empty($hidetop))
 		{
-			//$pdf->line($this->posxdelivery-1, $tab_top, $this->posttest2-1, $tab_top + $tab_height);
+			//$pdf->line($this->postest2-1, $tab_top, $this->posttest2-1, $tab_top + $tab_height);
 
-			//$pdf->SetXY($this->posxdelivery, $tab_top+1);
+			//$pdf->SetXY($this->postest2, $tab_top+1);
 			$pdf->SetXY($this->posno-1, $tab_top+1);
 			//$pdf->SetTopMargin();
 			$pdf->MultiCell($this->posxdesc-$this->posno,0, 'No','','C');
@@ -1431,13 +1422,13 @@ class pdf_pronew extends ModelePDFPropales
 				//$pdf->MultiCell($this->posxtva-$this->posxpicture-1,2, $outputlangs->transnoentities("Photo"),'','C');
 			}
 		}
-		$pdf->line($this->posxdelivery-1, $tab_top, $this->posxdelivery-1, $tab_top + $tab_height);
+		$pdf->line($this->postest2-1, $tab_top, $this->postest2-1, $tab_top + $tab_height);
 		if (empty($hidetop))
 		{
-			//$pdf->line($this->posxdelivery-1, $tab_top, $this->posttest2-1, $tab_top + $tab_height);
+			//$pdf->line($this->postest2-1, $tab_top, $this->posttest2-1, $tab_top + $tab_height);
 
-			//$pdf->SetXY($this->posxdelivery, $tab_top+1);
-			$pdf->SetXY($this->posxdelivery, $tab_top+1);
+			//$pdf->SetXY($this->postest2, $tab_top+1);
+			$pdf->SetXY($this->postest2, $tab_top+1);
 			$pdf->MultiCell(0,2, $outputlangs->transnoentities("Delivery"),'','L');
 		}
 		//display tax
