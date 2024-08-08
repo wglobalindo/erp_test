@@ -212,7 +212,8 @@ class pdf_shipment extends ModelePdfExpedition
 				$tab_height_newpage = $this->page_hauteur - $tab_top_newpage - $heightforfooter;
 
 				$extrafields = new ExtraFields($this->db);
-				$extralabels=$extrafields->fetch_name_optionals_label($object->table_element);
+				$extrafields->fetch_name_optionals_label($object->table_element_line);
+				$unit_name_array = $extrafields->attributes[$object->table_element_line]['param']['unit']['options'];
 
 				// Affiche notes
 				if (! empty($object->note_public))
@@ -301,21 +302,8 @@ class pdf_shipment extends ModelePdfExpedition
 					$pdf->SetXY(150, $curY);
 					$pdf->MultiCell(30, 5, $object->lines[$i]->qty_shipped, 0, 'C', 0);
 
-					// Unit name 211018 Jay
-
-					$unit_num= $object->lines[$i]->array_options['options_unit'];
-					switch ($unit_num){
-						case 0: $unit_name ="Pcs"; break;
-						case 1: $unit_name ="Set"; break;
-						case 2: $unit_name ="Dozen"; break;
-						case 3: $unit_name ="Botol"; break;
-						case 4: $unit_name ="Box"; break;
-						case 5: $unit_name ="Roll"; break;
-						case 6: $unit_name ="Meter"; break;
-						case 7: $unit_name ="Liter"; break;
-						case 8: $unit_name ="Pack"; break;
-						case 9: $unit_name ="Drum"; break;
-					}
+					$unit_index = $object->lines[$i]->array_options['options_unit'];
+					$unit_name = $unit_name_array[$unit_index];
 					$pdf->SetXY(180, $curY);
 					$pdf->MultiCell(25, 5, $unit_name, 0, 'C', 0);
 
