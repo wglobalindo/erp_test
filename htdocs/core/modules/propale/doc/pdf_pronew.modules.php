@@ -120,13 +120,13 @@ class pdf_pronew extends ModelePDFPropales
 		else
 		{
 			$this->posxdesc=20;
-			$this->posxdelivery=93;
+			$this->posxdelivery=76;
 			// $this->posxtva=101;
-			$this->posxup=110;
-			$this->posxqty=138;
+			$this->posxup=114;
+			$this->posxqty=142;
 		}
-		$this->posxdiscount=162;
-		$this->postotalht=175;
+		$this->posxdiscount=165;
+		$this->postotalht=173;
 		if (! empty($conf->global->MAIN_GENERATE_DOCUMENTS_WITHOUT_VAT) || ! empty($conf->global->MAIN_GENERATE_DOCUMENTS_WITHOUT_VAT_COLUMN)) $this->posxtva=$this->posxup;
 		$this->posxpicture=$this->posxtva - (empty($conf->global->MAIN_DOCUMENTS_WITH_PICTURE_WIDTH)?20:$conf->global->MAIN_DOCUMENTS_WITH_PICTURE_WIDTH);	// width of images
 		if ($this->page_largeur < 210) // To work with US executive format
